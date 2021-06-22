@@ -1,0 +1,80 @@
+{% extends 'schedules/base.html' %}
+{% block content %}
+    <style>
+        table {
+            table-layout: fixed;
+        }
+
+        td > div {
+            height: 100px;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+    </style>
+    <button class="example4" onclick="location.href='{% url 'schedules:month_with_schedule' month_previous.year month_previous.month %}'"> < </button>
+    <b>{{ month_current | date:"Y/m" }}</b>
+    <button class="example4" onclick="location.href='{% url 'schedules:month_with_schedule' month_next.year month_next.month %}'"> > </button>
+    <br>
+    <br>
+    
+    
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            {% for w in week_names %}
+            {% if w == "Sat" %}
+            <th class="text-primary example2">
+            {% elif w == "Sun" %}
+            <th class="text-danger example3">
+            {% else %}
+            <th>
+                {% endif %}
+                {{ w }}
+            </th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for week_day_schedles in month_day_schedules %}
+            <tr>
+                <style type="text/css"> 
+                    .example1 { background-color: #EAD9FF; }
+                    .example2 { background-color: #DDFFFF; }
+                    .example3 { background-color: #FFD5EC; }
+                    .example4 { background-color: #151452;
+                        color: #fff;
+                        border-radius: 5px;
+                        border-style: none;
+                        padding: 3px 12px;
+                    }
+                </style>
+                {% for day, schedules in week_day_schedles.items %}
+                    {% if now == day %}
+                        <td class="example1">
+                    {% elif week_first == day %}
+                        <td class="example2">
+                    {% elif week_last == day %}
+                        <td class="example3">
+                    {% else %}
+                        <td>
+                    {% endif %}
+
+                <div>
+                    {% if month_current.month != day.month %}
+                        {{ day | date:"m/d" }}
+                    {% else %}
+                    <b><a href="{% url 'schedules:week2' day.year day.month day.day %}" class="text-dark">{{ day.day }}{{ day.is_holiday_name }}</a></b>
+                    {% endif %}
+
+                    {% for schedule in schedules %}
+                        <p>{{ schedule.summary }}</p>
+                    {% endfor %}
+                </div>
+                </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
